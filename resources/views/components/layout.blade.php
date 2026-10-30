@@ -11,8 +11,10 @@
         <a href="{{ route('products.index') }}">Products</a>
     </header>
     <nav>
-        <a href="{{ route('products.index') }}">All products</a>
-        <a href="{{ route('products.create') }}">New product</a>
+        <ul>
+            <li><a href="{{ route('products.index') }}">All products</a></li>
+            <li><a href="{{ route('products.create') }}">New product</a></li>
+        </ul>
     </nav>
     <main>
         {{ $slot }}

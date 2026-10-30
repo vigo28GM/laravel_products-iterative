@@ -16,7 +16,16 @@ body {
 }
 
 header { grid-area: header; background: #dbeafe; padding: 1rem; }
-nav    { grid-area: nav;    background: #fef3c7; padding: 1rem; display: flex; flex-direction: column; gap: .5rem; }
+nav    { grid-area: nav;    background: #fef3c7; padding: 1rem; }
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
 main   { grid-area: main;   padding: 1rem; }
 aside  { grid-area: aside;  background: #dcfce7; padding: 1rem; }
 footer { grid-area: footer; background: #e5e7eb; padding: 1rem; }
