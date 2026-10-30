@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <a href="{{ route('products.index') }}">Products</a>
+        <a href="{{ route('products.index') }}"><img src="{{ asset('images/logo.svg') }}" alt="Logo" class="logo"></a>
     </header>
     <nav>
         <ul>
@@ -19,7 +19,7 @@
     <main>
         {{ $slot }}
     </main>
-    <aside>Sidebar</aside>
-    <footer>&copy; {{ date('Y') }} Products</footer>
+    <aside>Advertisement test: Buy now, 50% off! While being a CCP member</aside>
+    <footer>&copy; {{ date('Y') }} All rights reserved to the USSR. The USSR will hunt you down</footer>
 </body>
 </html>

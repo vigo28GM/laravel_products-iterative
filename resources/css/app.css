@@ -16,6 +16,12 @@ body {
 }
 
 header { grid-area: header; background: #dbeafe; padding: 1rem; }
+header .logo {
+    display: block;
+    height: 3rem;
+    width: auto;
+}
+
 nav    { grid-area: nav;    background: #fef3c7; padding: 1rem; }
 
 nav ul {
