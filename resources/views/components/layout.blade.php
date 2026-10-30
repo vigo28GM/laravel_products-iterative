@@ -17,6 +17,8 @@
         </ul>
     </nav>
     <main>
+        <x-flash-success />
+        <x-flash-errors />
         {{ $slot }}
     </main>
     <aside>Advertisement test: Buy now, 50% off! While being a CCP member</aside>

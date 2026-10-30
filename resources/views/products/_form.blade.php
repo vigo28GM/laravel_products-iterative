@@ -1,11 +1,4 @@
 @csrf
-@if ($errors->any())
-    <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-@endif
 <p>
     <label for="name">Name</label>
     <input id="name" name="name" value="{{ old('name', $product->name ?? '') }}">
