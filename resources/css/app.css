@@ -73,6 +73,36 @@ footer { grid-area: footer; background: #e5e7eb; padding: 1rem; }
     border-radius: 1rem;
 }
 
-form.inline {
-    display: inline;
+.tag-remove {
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.autocomplete {
+    position: relative;
+    max-width: 20rem;
+}
+
+.autocomplete ul {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid currentColor;
+    background: Canvas;
+    color: CanvasText;
+}
+
+.autocomplete li {
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+}
+
+.autocomplete li[aria-selected="true"] {
+    background: Highlight;
+    color: HighlightText;
 }

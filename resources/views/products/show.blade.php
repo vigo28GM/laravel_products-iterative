@@ -15,25 +15,26 @@
         <button type="submit" name="action" value="decrease">Remove stock</button>
     </form>
     <h2>Tags</h2>
-    <ul class="tags">
-        @forelse ($product->tags as $tag)
-            <li>
-                {{ $tag->name }}
-                <form method="POST" action="{{ route('products.tags.destroy', [$product, $tag]) }}" class="inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" aria-label="Remove tag {{ $tag->name }}">&times;</button>
-                </form>
-            </li>
-        @empty
-            <li>No tags yet.</li>
-        @endforelse
-    </ul>
-    <form method="POST" action="{{ route('products.tags.store', $product) }}">
+    <form id="tags-form" method="POST" action="{{ route('products.tags.update', $product) }}"
+          data-search-url="{{ route('tags.index') }}">
         @csrf
-        <label for="tag-name">Tag</label>
-        <input id="tag-name" name="name" type="text" maxlength="50" value="{{ old('name') }}" required>
-        <button type="submit">Add tag</button>
+        @method('PUT')
+        <ul class="tags" id="tag-list">
+            @foreach ($product->tags as $tag)
+                <li data-name="{{ $tag->name }}">
+                    {{ $tag->name }}
+                    <input type="hidden" name="tags[]" value="{{ $tag->name }}">
+                    <button type="button" class="tag-remove" aria-label="Remove tag {{ $tag->name }}">&times;</button>
+                </li>
+            @endforeach
+        </ul>
+        <div class="autocomplete">
+            <label for="tag-input">Add tag</label>
+            <input id="tag-input" type="text" maxlength="50" autocomplete="off"
+                   role="combobox" aria-expanded="false" aria-controls="tag-suggestions" aria-autocomplete="list">
+            <ul id="tag-suggestions" role="listbox" hidden></ul>
+        </div>
+        <button type="submit">Update</button>
     </form>
     <a href="{{ route('products.edit', $product) }}">Edit</a>
     <a href="{{ route('products.index') }}">Back</a>

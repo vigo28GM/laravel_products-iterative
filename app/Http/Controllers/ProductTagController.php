@@ -9,29 +9,22 @@ use Illuminate\Http\Request;
 
 class ProductTagController extends Controller
 {
-    public function store(Request $request, Product $product): RedirectResponse
+    public function update(Request $request, Product $product): RedirectResponse
     {
-        $request->merge(['name' => mb_strtolower(trim((string) $request->input('name')))]);
-
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:50'],
+        $request->validate([
+            'tags' => ['nullable', 'array', 'max:50'],
+            'tags.*' => ['nullable', 'string', 'max:50'],
         ]);
 
-        $tag = Tag::firstOrCreate(['name' => $data['name']]);
+        $names = collect($request->input('tags', []))
+            ->map(fn (?string $name) => mb_strtolower(trim((string) $name)))
+            ->filter()
+            ->unique();
 
-        if ($product->tags()->where('tags.id', $tag->id)->exists()) {
-            return back()->withErrors(['name' => "Product already has the tag \"{$tag->name}\"."]);
-        }
+        $product->tags()->sync(
+            $names->map(fn (string $name) => Tag::firstOrCreate(['name' => $name])->id)
+        );
 
-        $product->tags()->attach($tag);
-
-        return back()->with('success', "Tag \"{$tag->name}\" added.");
-    }
-
-    public function destroy(Product $product, Tag $tag): RedirectResponse
-    {
-        $product->tags()->detach($tag);
-
-        return back()->with('success', "Tag \"{$tag->name}\" removed.");
+        return redirect()->route('products.show', $product)->with('success', 'Tags updated.');
     }
 }
