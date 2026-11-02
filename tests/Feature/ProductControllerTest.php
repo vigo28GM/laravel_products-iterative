@@ -155,4 +155,52 @@ class ProductControllerTest extends TestCase
     {
         $this->get('/')->assertRedirect('/products');
     }
+
+    public function test_adjust_quantity_increases_stock(): void
+    {
+        $product = Product::factory()->create(['quantity' => 5]);
+
+        $this->patch(route('products.adjust-quantity', $product), ['action' => 'increase', 'amount' => 3])
+            ->assertSessionHas('success');
+
+        $this->assertSame(8, $product->fresh()->quantity);
+    }
+
+    public function test_adjust_quantity_decreases_stock(): void
+    {
+        $product = Product::factory()->create(['quantity' => 5]);
+
+        $this->patch(route('products.adjust-quantity', $product), ['action' => 'decrease', 'amount' => 5])
+            ->assertSessionHas('success');
+
+        $this->assertSame(0, $product->fresh()->quantity);
+    }
+
+    public function test_adjust_quantity_cannot_go_below_zero(): void
+    {
+        $product = Product::factory()->create(['quantity' => 2]);
+
+        $this->patch(route('products.adjust-quantity', $product), ['action' => 'decrease', 'amount' => 3])
+            ->assertSessionHasErrors('amount');
+
+        $this->assertSame(2, $product->fresh()->quantity);
+    }
+
+    public function test_adjust_quantity_rejects_invalid_input(): void
+    {
+        $product = Product::factory()->create(['quantity' => 2]);
+
+        $this->patch(route('products.adjust-quantity', $product), ['action' => 'explode', 'amount' => 0])
+            ->assertSessionHasErrors(['action', 'amount']);
+
+        $this->assertSame(2, $product->fresh()->quantity);
+    }
+
+    public function test_show_page_has_quantity_adjust_form(): void
+    {
+        $product = Product::factory()->create();
+
+        $this->get(route('products.show', $product))
+            ->assertSee(route('products.adjust-quantity', $product), false);
+    }
 }
