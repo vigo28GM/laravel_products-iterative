@@ -17,4 +17,25 @@ class Product extends Model
     {
         return ['expiration_date' => 'date'];
     }
+
+    public function increaseQuantity(int $amount): void
+    {
+        $this->increment('quantity', $amount);
+    }
+
+    /**
+     * Returns false (and changes nothing) when there is not enough stock.
+     */
+    public function decreaseQuantity(int $amount): bool
+    {
+        $updated = static::whereKey($this->getKey())
+            ->where('quantity', '>=', $amount)
+            ->decrement('quantity', $amount);
+
+        if ($updated) {
+            $this->refresh();
+        }
+
+        return (bool) $updated;
+    }
 }
