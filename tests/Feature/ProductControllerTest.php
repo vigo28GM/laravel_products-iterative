@@ -203,4 +203,37 @@ class ProductControllerTest extends TestCase
         $this->get(route('products.show', $product))
             ->assertSee(route('products.adjust-quantity', $product), false);
     }
+
+    public function test_adjust_quantity_requires_action_and_amount(): void
+    {
+        $product = Product::factory()->create(['quantity' => 2]);
+
+        $this->patch(route('products.adjust-quantity', $product), [])
+            ->assertSessionHasErrors(['action', 'amount']);
+    }
+
+    public function test_adjust_quantity_rejects_too_large_amount(): void
+    {
+        $product = Product::factory()->create(['quantity' => 2]);
+
+        $this->patch(route('products.adjust-quantity', $product), ['action' => 'increase', 'amount' => 1000001])
+            ->assertSessionHasErrors('amount');
+
+        $this->assertSame(2, $product->fresh()->quantity);
+    }
+
+    public function test_adjust_quantity_returns_404_for_missing_product(): void
+    {
+        $this->patch(route('products.adjust-quantity', 999), ['action' => 'increase', 'amount' => 1])
+            ->assertNotFound();
+    }
+
+    public function test_adjust_quantity_redirects_back_to_show_page(): void
+    {
+        $product = Product::factory()->create(['quantity' => 2]);
+
+        $this->from(route('products.show', $product))
+            ->patch(route('products.adjust-quantity', $product), ['action' => 'increase', 'amount' => 1])
+            ->assertRedirect(route('products.show', $product));
+    }
 }
