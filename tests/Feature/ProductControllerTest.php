@@ -236,4 +236,24 @@ class ProductControllerTest extends TestCase
             ->patch(route('products.adjust-quantity', $product), ['action' => 'increase', 'amount' => 1])
             ->assertRedirect(route('products.show', $product));
     }
+
+    public function test_adjust_quantity_returns_json_for_fetch_requests(): void
+    {
+        $product = Product::factory()->create(['quantity' => 5]);
+
+        $this->patchJson(route('products.adjust-quantity', $product), ['action' => 'increase', 'amount' => 3])
+            ->assertOk()
+            ->assertJson(['quantity' => 8, 'message' => 'Added 3 to stock.']);
+    }
+
+    public function test_adjust_quantity_json_reports_insufficient_stock(): void
+    {
+        $product = Product::factory()->create(['quantity' => 2]);
+
+        $this->patchJson(route('products.adjust-quantity', $product), ['action' => 'decrease', 'amount' => 5])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('amount');
+
+        $this->assertSame(2, $product->fresh()->quantity);
+    }
 }

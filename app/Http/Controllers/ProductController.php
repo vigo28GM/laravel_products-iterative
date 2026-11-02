@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -51,7 +52,7 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product deleted.');
     }
 
-    public function adjustQuantity(Request $request, Product $product): RedirectResponse
+    public function adjustQuantity(Request $request, Product $product): RedirectResponse|JsonResponse
     {
         $data = $request->validate([
             'action' => ['required', Rule::in(['increase', 'decrease'])],
@@ -61,14 +62,29 @@ class ProductController extends Controller
         if ($data['action'] === 'increase') {
             $product->increaseQuantity($data['amount']);
 
-            return back()->with('success', "Added {$data['amount']} to stock.");
+            return $this->quantityResponse($request, $product, "Added {$data['amount']} to stock.");
         }
 
         if (! $product->decreaseQuantity($data['amount'])) {
-            return back()->withErrors(['amount' => "Not enough stock: only {$product->quantity} available."]);
+            $message = "Not enough stock: only {$product->quantity} available.";
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message, 'errors' => ['amount' => [$message]]], 422);
+            }
+
+            return back()->withErrors(['amount' => $message]);
         }
 
-        return back()->with('success', "Removed {$data['amount']} from stock.");
+        return $this->quantityResponse($request, $product, "Removed {$data['amount']} from stock.");
+    }
+
+    private function quantityResponse(Request $request, Product $product, string $message): RedirectResponse|JsonResponse
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message, 'quantity' => $product->quantity]);
+        }
+
+        return back()->with('success', $message);
     }
 
     private function validated(Request $request): array

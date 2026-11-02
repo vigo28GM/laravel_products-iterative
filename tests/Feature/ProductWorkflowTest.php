@@ -85,13 +85,13 @@ class ProductWorkflowTest extends TestCase
             ->from($show)
             ->patch(route('products.adjust-quantity', $product), ['action' => 'increase', 'amount' => 5])
             ->assertSee('Added 5 to stock.')
-            ->assertSee('Quantity: 15');
+            ->assertSee('<span id="quantity">15</span>', false);
 
         $this->followingRedirects()
             ->from($show)
             ->patch(route('products.adjust-quantity', $product), ['action' => 'decrease', 'amount' => 12])
             ->assertSee('Removed 12 from stock.')
-            ->assertSee('Quantity: 3');
+            ->assertSee('<span id="quantity">3</span>', false);
 
         $this->assertSame(3, $product->fresh()->quantity);
     }
@@ -104,7 +104,7 @@ class ProductWorkflowTest extends TestCase
             ->from(route('products.show', $product))
             ->patch(route('products.adjust-quantity', $product), ['action' => 'decrease', 'amount' => 4])
             ->assertSee('Not enough stock: only 3 available.')
-            ->assertSee('Quantity: 3');
+            ->assertSee('<span id="quantity">3</span>', false);
 
         $this->assertSame(3, $product->fresh()->quantity);
     }

@@ -2,10 +2,11 @@
     <h1>{{ $product->name }}</h1>
     <p>{{ $product->description }}</p>
     <p>Price: {{ $product->price }}</p>
-    <p>Quantity: {{ $product->quantity }}</p>
+    <p>Quantity: <span id="quantity">{{ $product->quantity }}</span></p>
     <p>Expiration date: {{ $product->expiration_date?->format('Y-m-d') }}</p>
     <p>Status: {{ $product->status }}</p>
-    <form method="POST" action="{{ route('products.adjust-quantity', $product) }}">
+    <div id="quantity-flash"></div>
+    <form id="quantity-form" method="POST" action="{{ route('products.adjust-quantity', $product) }}">
         @csrf
         @method('PATCH')
         <label for="amount">Amount</label>
