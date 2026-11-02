@@ -51,6 +51,26 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product deleted.');
     }
 
+    public function adjustQuantity(Request $request, Product $product): RedirectResponse
+    {
+        $data = $request->validate([
+            'action' => ['required', Rule::in(['increase', 'decrease'])],
+            'amount' => ['required', 'integer', 'min:1', 'max:1000000'],
+        ]);
+
+        if ($data['action'] === 'increase') {
+            $product->increaseQuantity($data['amount']);
+
+            return back()->with('success', "Added {$data['amount']} to stock.");
+        }
+
+        if (! $product->decreaseQuantity($data['amount'])) {
+            return back()->withErrors(['amount' => "Not enough stock: only {$product->quantity} available."]);
+        }
+
+        return back()->with('success', "Removed {$data['amount']} from stock.");
+    }
+
     private function validated(Request $request): array
     {
         return $request->validate([
