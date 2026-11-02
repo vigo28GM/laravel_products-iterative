@@ -58,3 +58,21 @@ footer { grid-area: footer; background: #e5e7eb; padding: 1rem; }
 .flash-success { background: #dcfce7; border-color: #16a34a; color: #166534; }
 .flash-errors  { background: #fee2e2; border-color: #dc2626; color: #991b1b; }
 .flash-errors ul { margin: 0; padding-left: 1.25rem; }
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+}
+
+.tags li {
+    padding: 0.2rem 0.6rem;
+    border: 1px solid currentColor;
+    border-radius: 1rem;
+}
+
+form.inline {
+    display: inline;
+}
