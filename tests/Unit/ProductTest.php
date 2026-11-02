@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use InvalidArgumentException;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
@@ -66,6 +67,38 @@ class ProductTest extends TestCase
         $product->decreaseQuantity(3);
 
         $this->assertSame(5, $other->fresh()->quantity);
+    }
+
+    public function test_increase_quantity_rejects_non_positive_amount(): void
+    {
+        $product = Product::factory()->create(['quantity' => 5]);
+
+        foreach ([0, -3] as $amount) {
+            try {
+                $product->increaseQuantity($amount);
+                $this->fail("Amount {$amount} should have been rejected.");
+            } catch (InvalidArgumentException) {
+                // expected
+            }
+        }
+
+        $this->assertSame(5, $product->fresh()->quantity);
+    }
+
+    public function test_decrease_quantity_rejects_non_positive_amount(): void
+    {
+        $product = Product::factory()->create(['quantity' => 5]);
+
+        foreach ([0, -3] as $amount) {
+            try {
+                $product->decreaseQuantity($amount);
+                $this->fail("Amount {$amount} should have been rejected.");
+            } catch (InvalidArgumentException) {
+                // expected
+            }
+        }
+
+        $this->assertSame(5, $product->fresh()->quantity);
     }
 
     public function test_expiration_date_is_cast_to_date(): void
